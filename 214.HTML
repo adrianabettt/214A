@@ -1,0 +1,299 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .app { font-family: 'ARIAL', cursive; background: #FFF9F0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  h2 { text-align: center; font-size: 18px; color: #FF6600; }
+
+  .stage { background: #E0F7FF; border-radius: 14px; border: 3px solid #99DDFF; height: 175px; position: relative; overflow: hidden; }
+  .ground { position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: #88CC44; border-top: 3px solid #55AA22; }
+  .char { position: absolute; bottom: 50px; font-size: 44px; line-height: 1; transition: left 0.3s, bottom 0.2s; }
+  .bubble { position: absolute; background: white; border: 2px solid #555; border-radius: 10px; padding: 4px 10px; font-size: 13px; font-weight: bold; white-space: nowrap; display: none; }
+  .bubble::after { content:''; position:absolute; bottom:-8px; left:10px; border:4px solid transparent; border-top-color:#555; }
+  .rep-counter { position: absolute; top: 8px; right: 10px; background: #AA44FF; color: white; border-radius: 10px; padding: 3px 10px; font-size: 12px; font-weight: bold; display: none; }
+
+  .mission-box { border-radius: 12px; padding: 7px 12px; font-size: 12px; text-align: center; border: 2px solid; }
+
+  .blocks-area { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .block { border: none; border-radius: 12px; padding: 8px 13px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s, filter 0.1s; }
+  .block:hover { filter: brightness(1.1); transform: scale(1.05); }
+  .block:active { transform: scale(0.95); }
+  .block:disabled { opacity: 0.35; cursor: not-allowed; transform: none; filter: none; }
+
+  .repeat-ctrl { display: none; align-items: center; gap: 6px; justify-content: center; background: #F5EEFF; border: 2px solid #CC88FF; border-radius: 10px; padding: 6px 10px; }
+  .repeat-ctrl label { font-size: 12px; color: #7733BB; font-weight: bold; }
+  .repeat-ctrl select { border: 2px solid #AA44FF; border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: bold; color: #550099; background: #EEE0FF; font-family: inherit; }
+
+  .sequence { min-height: 50px; background: #F0FAFF; border: 3px dashed #99CCFF; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 5px; padding: 7px; align-items: center; }
+  .seq-hint { font-size: 11px; color: #AABBCC; font-style: italic; }
+  .seq-block { border-radius: 10px; padding: 5px 10px; font-size: 13px; font-weight: bold; color: white; display: flex; align-items: center; gap: 3px; }
+  .seq-block .x { background: rgba(0,0,0,0.22); border: none; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; padding: 0; }
+
+  .btns { display: flex; gap: 8px; justify-content: center; }
+  .run-btn { background: #44CC44; border: none; border-radius: 12px; padding: 9px 22px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s; }
+  .run-btn:hover { transform: scale(1.05); }
+  .clear-btn { background: #FF6666; border: none; border-radius: 12px; padding: 9px 16px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; }
+
+  .overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; z-index: 99; }
+  .overlay.show { display: flex; }
+  .overlay-box { background: white; border-radius: 24px; padding: 28px 32px; text-align: center; max-width: 290px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .overlay-box h3 { font-size: 24px; margin-bottom: 6px; }
+  .overlay-box .score-big { font-size: 52px; font-weight: bold; margin: 8px 0; }
+  .overlay-box .stars-big { font-size: 26px; margin-bottom: 10px; letter-spacing: 3px; }
+  .overlay-box p { font-size: 14px; margin-bottom: 14px; }
+  .overlay-btn { border: none; border-radius: 14px; padding: 10px 26px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; }
+
+  .footer { text-align: center; font-size: 10px; color: #AA8877; padding-top: 4px; border-top: 1px solid #FFDDCC; margin-top: 2px; }
+</style>
+
+<div class="app">
+  <h2>🐱 PROGRAMANDO O GATINHO!</h2>
+
+  <div class="stage" id="stage">
+    <div class="ground"></div>
+    <div class="char" id="char">🐱</div>
+    <div class="bubble" id="bubble"></div>
+    <div class="rep-counter" id="rep-counter"></div>
+  </div>
+
+  <div class="mission-box" id="mission-box"></div>
+
+  <div class="blocks-area">
+    <button class="block" style="background:#4499FF" id="bl-right"  onclick="add('➡️ Andar','#4499FF','right')">➡️ ANDAR</button>
+    <button class="block" style="background:#2266CC" id="bl-left"   onclick="add('⬅️ Voltar','#2266CC','left')">⬅️ VOLTAR</button>
+    <button class="block" style="background:#44AAEE" id="bl-jump"   onclick="add('⬆️ Pular','#44AAEE','jump')">⬆️ PULAR</button>
+    <button class="block" style="background:#FF8800" id="bl-spin"   onclick="add('🔄 Girar','#FF8800','spin')">🔄 GIRAR</button>
+    <button class="block" style="background:#FF66AA" id="bl-dance"  onclick="add('🎉 Dançar','#FF66AA','dance')">🎉 DANÇAR</button>
+    <button class="block" style="background:#44BB44" id="bl-say"    onclick="add('😸 Falar Oi!','#44BB44','say')">😸 FALAR OI!</button>
+    <button class="block" style="background:#AA44FF" id="bl-repeat" onclick="addRepeat()">🔁 REPETIR</button>
+  </div>
+
+  <div class="repeat-ctrl" id="repeat-ctrl">
+    <label>🔁 Repetir próximo bloco:</label>
+    <select id="rep-times">
+      <option value="2">2 vezes</option>
+      <option value="3" selected>3 vezes</option>
+      <option value="4">4 vezes</option>
+      <option value="5">5 vezes</option>
+    </select>
+    <span style="font-size:11px;color:#AA66CC">← escolha um bloco</span>
+  </div>
+
+  <div class="sequence" id="sequence">
+    <span class="seq-hint">👆 Monte sua sequência aqui!</span>
+  </div>
+
+  <div class="btns">
+    <button class="run-btn" id="run-btn" onclick="runAll()">▶ EXECUTAR!</button>
+    <button class="clear-btn" onclick="clearAll()">🗑 LIMPAR</button>
+  </div>
+
+  <div class="footer">Material Pedagógico — Profª Adriana Bett Terebinto © 2026</div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-box" id="overlay-box">
+    <h3 id="ov-title"></h3>
+    <div class="score-big" id="ov-score" style="display:none"></div>
+    <div class="stars-big" id="ov-stars" style="display:none"></div>
+    <p id="ov-text"></p>
+    <button class="overlay-btn" id="ov-btn"></button>
+  </div>
+</div>
+
+<script>
+const PHASES = [
+  {
+    num:1, label:'Fase 1', color:'#4499FF',
+    title:'FASE 1 — Movimentos',
+    mission:'Use os blocos ➡️ Andar e ⬆️ Pular (nessa ordem!)',
+    check: s => s.some(x=>act(x)==='right') && s.some(x=>act(x)==='jump'),
+    unlocked:['right','jump'], points:2.5
+  },
+  {
+    num:2, label:'Fase 2', color:'#FF8800',
+    title:'FASE 2 — Comunicação',
+    mission:'Use: ➡️ Andar + ⬆️ Pular + 😸 Falar Oi! + ⬅️ Voltar',
+    check: s => ['right','jump','say','left'].every(id=>s.some(x=>act(x)===id)),
+    unlocked:['right','left','jump','say'], points:2.5
+  },
+  {
+    num:3, label:'Fase 3', color:'#FF66AA',
+    title:'FASE 3 — Expressão + 🔁 Repetição',
+    mission:'Use: ➡️ Andar + 🔄 Girar + 🎉 Dançar — e use o 🔁 Repetir ao menos uma vez!',
+    check: s => ['right','spin','dance'].every(id=>s.some(x=>act(x)===id)) && s.some(x=>x.action==='repeat'),
+    unlocked:['right','left','jump','spin','dance','say','repeat'], points:2.5
+  },
+  {
+    num:4, label:'Fase 4 ⭐', color:'#AA44FF',
+    title:'FASE 4 — Criação Livre!',
+    mission:'MONTE SUA SEQUENCIA',
+    check: s => { const ids=[...new Set(s.map(x=>x.action==='repeat'?'repeat':x.action))]; return ids.length>=4 && s.some(x=>x.action==='repeat'); },
+    unlocked:['right','left','jump','spin','dance','say','repeat'], points:2.5
+  },
+];
+
+function act(b){ return b.action==='repeat' ? b.inner : b.action; }
+
+let phase=0, seq=[], running=false, posX=20, totalScore=0, phaseDone=false, pendingRepeat=null;
+const char=document.getElementById('char');
+const bubble=document.getElementById('bubble');
+const seqEl=document.getElementById('sequence');
+const repCtrl=document.getElementById('repeat-ctrl');
+
+function loadPhase(){
+  phaseDone=false; pendingRepeat=null; repCtrl.style.display='none';
+  const p=PHASES[phase];
+  const mb=document.getElementById('mission-box');
+  mb.style.background=p.color+'22'; mb.style.borderColor=p.color; mb.style.color='#333';
+  mb.innerHTML=`<strong style="color:${p.color}">${p.title}</strong><br>${p.mission}`;
+  updateBlockAccess();
+}
+
+function updateBlockAccess(){
+  const u=PHASES[phase].unlocked;
+  ['right','left','jump','spin','dance','say','repeat'].forEach(id=>{
+    const el=document.getElementById('bl-'+id);
+    if(el) el.disabled=!u.includes(id);
+  });
+}
+
+function addRepeat(){
+  if(running) return;
+  pendingRepeat=parseInt(document.getElementById('rep-times').value);
+  repCtrl.style.display='flex';
+}
+
+function add(label,color,action){
+  if(running) return;
+  if(!PHASES[phase].unlocked.includes(action)) return;
+  if(pendingRepeat){
+    seq.push({action:'repeat',times:pendingRepeat,inner:action,label:`🔁×${pendingRepeat} ${label}`,color:'#AA44FF'});
+    pendingRepeat=null; repCtrl.style.display='none';
+  } else {
+    seq.push({label,color,action});
+  }
+  render();
+}
+
+function render(){
+  seqEl.innerHTML='';
+  if(!seq.length){ seqEl.innerHTML='<span class="seq-hint">👆 Monte sua sequência aqui!</span>'; return; }
+  seq.forEach((b,i)=>{
+    const el=document.createElement('div');
+    el.className='seq-block';
+    el.style.background=b.action==='repeat'?'#AA44FF':b.color;
+    el.innerHTML=`${b.label} <button class="x" onclick="rem(${i})">×</button>`;
+    seqEl.appendChild(el);
+  });
+}
+
+function rem(i){ if(running) return; seq.splice(i,1); render(); }
+
+function clearAll(){
+  if(running) return;
+  seq=[]; pendingRepeat=null; repCtrl.style.display='none'; render();
+  posX=20; char.style.left=posX+'px'; char.style.bottom='50px';
+  char.style.transform=''; bubble.style.display='none';
+  document.getElementById('rep-counter').style.display='none';
+}
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function execAction(action){
+  const stageW=document.getElementById('stage').clientWidth;
+  if(action==='right'){ posX=Math.min(posX+70,stageW-70); char.style.left=posX+'px'; await delay(380); }
+  else if(action==='left'){ posX=Math.max(posX-70,10); char.style.left=posX+'px'; await delay(380); }
+  else if(action==='jump'){ char.style.bottom='115px'; await delay(320); char.style.bottom='50px'; await delay(320); }
+  else if(action==='spin'){ char.style.transition='transform 0.45s'; char.style.transform='rotate(360deg)'; await delay(500); char.style.transition=''; char.style.transform=''; }
+  else if(action==='dance'){ for(let i=0;i<3;i++){ char.style.bottom='78px'; await delay(170); char.style.bottom='50px'; await delay(170); } }
+  else if(action==='say'){ bubble.textContent='Oi! 😸'; bubble.style.display='block'; bubble.style.left=(posX-10)+'px'; bubble.style.bottom='108px'; await delay(1100); bubble.style.display='none'; }
+}
+
+async function runAll(){
+  if(running||!seq.length) return;
+  running=true;
+  document.getElementById('run-btn').textContent='⏳ Rodando...';
+  const rc=document.getElementById('rep-counter');
+  for(const b of seq){
+    if(!running) break;
+    if(b.action==='repeat'){
+      rc.style.display='block';
+      for(let i=0;i<b.times;i++){ rc.textContent=`🔁 ${i+1}/${b.times}`; await execAction(b.inner); await delay(80); }
+      rc.style.display='none';
+    } else { await execAction(b.action); }
+    await delay(90);
+  }
+  running=false;
+  document.getElementById('run-btn').textContent='▶ Executar!';
+  evaluate();
+}
+
+function evaluate(){
+  const p=PHASES[phase];
+  const passed=p.check(seq);
+  if(passed&&!phaseDone){
+    totalScore=Math.min(10,totalScore+p.points);
+    phaseDone=true;
+    setTimeout(()=>showOverlay(true),500);
+  } else if(!passed){
+    showOverlay(false);
+  }
+}
+
+const COLORS_OK  = ['#FF6600','#44BB44','#AA44FF','#FF3399'];
+const COLORS_TRY = '#FF8800';
+
+function showOverlay(passed){
+  const p=PHASES[phase];
+  const isLast=phase===PHASES.length-1;
+  const box=document.getElementById('overlay-box');
+  const scoreEl=document.getElementById('ov-score');
+  const starsEl=document.getElementById('ov-stars');
+
+  if(passed){
+    box.style.border=`5px solid ${COLORS_OK[phase]}`;
+    box.style.background=`linear-gradient(135deg, #fffbe6 0%, #fff0fa 100%)`;
+    document.getElementById('ov-title').textContent = isLast ? '🏆 Você arrasou!' : '🎉 Fase '+p.num+' concluída!';
+
+    if(isLast){
+      const s=totalScore;
+      const full=Math.floor(s/2), half=s%2>=0.5?1:0;
+      scoreEl.textContent=s.toFixed(1)+'/10';
+      scoreEl.style.color=COLORS_OK[phase];
+      scoreEl.style.display='block';
+      starsEl.textContent='⭐'.repeat(full)+(half?'✨':'')+'☆'.repeat(5-full-half);
+      starsEl.style.display='block';
+      document.getElementById('ov-text').textContent='PARABÉNS!🌟';
+      const btn=document.getElementById('ov-btn');
+      btn.textContent='🎊 Finalizar!';
+      btn.style.background=COLORS_OK[phase];
+      btn.onclick=()=>document.getElementById('overlay').classList.remove('show');
+    } else {
+      scoreEl.style.display='none'; starsEl.style.display='none';
+      document.getElementById('ov-text').textContent='ÓTIMO TRABALHO! 💪';
+      const btn=document.getElementById('ov-btn');
+      btn.textContent='➡️ PRÓXIMA FASE!';
+      btn.style.background=COLORS_OK[phase];
+      btn.onclick=nextPhase;
+    }
+  } else {
+    box.style.border=`5px solid ${COLORS_TRY}`;
+    box.style.background='linear-gradient(135deg, #fff8e0 0%, #fff3cc 100%)';
+    scoreEl.style.display='none'; starsEl.style.display='none';
+    document.getElementById('ov-title').textContent='🤔 QUASE LÁ!';
+    document.getElementById('ov-text').textContent='RELEIA A MISSÃO!';
+    const btn=document.getElementById('ov-btn');
+    btn.textContent='🔄 TENTAR DE NOVO!';
+    btn.style.background=COLORS_TRY;
+    btn.onclick=()=>{ document.getElementById('overlay').classList.remove('show'); clearAll(); };
+  }
+  document.getElementById('overlay').classList.add('show');
+}
+
+function nextPhase(){
+  document.getElementById('overlay').classList.remove('show');
+  if(phase<PHASES.length-1){ phase++; clearAll(); loadPhase(); }
+}
+
+loadPhase();
+</script>
