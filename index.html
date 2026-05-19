@@ -1,53 +1,170 @@
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  .app { font-family: 'ARIAL', cursive; background: #FFF9F0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  h2 { text-align: center; font-size: 18px; color: #FF6600; }
+  body { font-family: 'Fredoka One', 'Arial Rounded MT Bold', Arial, sans-serif; }
+  .app { background: #FFF9F0; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 700px; margin: 0 auto; }
 
-  .stage { background: #E0F7FF; border-radius: 14px; border: 3px solid #99DDFF; height: 175px; position: relative; overflow: hidden; }
-  .ground { position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: #88CC44; border-top: 3px solid #55AA22; }
-  .char { position: absolute; bottom: 50px; font-size: 44px; line-height: 1; transition: left 0.3s, bottom 0.2s; }
-  .bubble { position: absolute; background: white; border: 2px solid #555; border-radius: 10px; padding: 4px 10px; font-size: 13px; font-weight: bold; white-space: nowrap; display: none; }
-  .bubble::after { content:''; position:absolute; bottom:-8px; left:10px; border:4px solid transparent; border-top-color:#555; }
-  .rep-counter { position: absolute; top: 8px; right: 10px; background: #AA44FF; color: white; border-radius: 10px; padding: 3px 10px; font-size: 12px; font-weight: bold; display: none; }
+  /* TÍTULO */
+  .app-title { text-align: center; font-size: 22px; color: #FF6600; font-weight: bold; letter-spacing: 1px; }
 
-  .mission-box { border-radius: 12px; padding: 7px 12px; font-size: 12px; text-align: center; border: 2px solid; }
+  /* PALCO */
+  .stage { background: linear-gradient(180deg, #D0EEFF 0%, #B8E4FF 60%, #C8F0FF 100%); border-radius: 16px; border: 3px solid #88CCFF; height: 200px; position: relative; overflow: hidden; }
+  .ground { position: absolute; bottom: 0; left: 0; right: 0; height: 55px; background: linear-gradient(180deg, #88CC44 0%, #66AA22 100%); border-top: 3px solid #44AA00; }
+  .ground-deco { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; }
+  .char { position: absolute; bottom: 55px; font-size: 50px; line-height: 1; transition: left 0.3s, bottom 0.2s; }
+  .bubble { position: absolute; background: white; border: 2.5px solid #555; border-radius: 12px; padding: 5px 12px; font-size: 14px; font-weight: bold; white-space: nowrap; display: none; }
+  .bubble::after { content:''; position:absolute; bottom:-9px; left:12px; border:5px solid transparent; border-top-color:#555; }
+  .rep-counter { position: absolute; top: 10px; right: 12px; background: #AA44FF; color: white; border-radius: 10px; padding: 4px 12px; font-size: 13px; font-weight: bold; display: none; }
 
-  .blocks-area { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-  .block { border: none; border-radius: 12px; padding: 8px 13px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s, filter 0.1s; }
-  .block:hover { filter: brightness(1.1); transform: scale(1.05); }
-  .block:active { transform: scale(0.95); }
-  .block:disabled { opacity: 0.35; cursor: not-allowed; transform: none; filter: none; }
+  /* MISSÃO — bem destacada */
+  .mission-box {
+    border-radius: 14px;
+    padding: 12px 16px;
+    border: 3px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mission-label {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.7;
+  }
+  .mission-phase {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .mission-text {
+    font-size: 15px;
+    line-height: 1.4;
+  }
 
-  .repeat-ctrl { display: none; align-items: center; gap: 6px; justify-content: center; background: #F5EEFF; border: 2px solid #CC88FF; border-radius: 10px; padding: 6px 10px; }
-  .repeat-ctrl label { font-size: 12px; color: #7733BB; font-weight: bold; }
-  .repeat-ctrl select { border: 2px solid #AA44FF; border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: bold; color: #550099; background: #EEE0FF; font-family: inherit; }
+  /* BLOCOS */
+  .section-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-align: center;
+  }
+  .blocks-area { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .block { border: none; border-radius: 14px; padding: 10px 16px; font-size: 15px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s, filter 0.1s; box-shadow: 0 3px 0 rgba(0,0,0,0.18); }
+  .block:hover { filter: brightness(1.1); transform: translateY(-2px); }
+  .block:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+  .block:disabled { opacity: 0.28; cursor: not-allowed; transform: none; filter: none; box-shadow: none; }
 
-  .sequence { min-height: 50px; background: #F0FAFF; border: 3px dashed #99CCFF; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 5px; padding: 7px; align-items: center; }
-  .seq-hint { font-size: 11px; color: #AABBCC; font-style: italic; }
-  .seq-block { border-radius: 10px; padding: 5px 10px; font-size: 13px; font-weight: bold; color: white; display: flex; align-items: center; gap: 3px; }
-  .seq-block .x { background: rgba(0,0,0,0.22); border: none; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; padding: 0; }
+  /* REPETIR CTRL */
+  .repeat-ctrl { display: none; align-items: center; gap: 8px; justify-content: center; background: #F5EEFF; border: 2.5px solid #CC88FF; border-radius: 12px; padding: 8px 14px; }
+  .repeat-ctrl label { font-size: 13px; color: #7733BB; font-weight: bold; }
+  .repeat-ctrl select { border: 2px solid #AA44FF; border-radius: 8px; padding: 4px 8px; font-size: 14px; font-weight: bold; color: #550099; background: #EEE0FF; font-family: inherit; }
 
+  /* ÁREA DE SEQUÊNCIA — bem identificada */
+  .sequence-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sequence-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 2px;
+  }
+  .sequence-header-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #4499FF;
+  }
+  .sequence-count {
+    background: #4499FF;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .sequence {
+    min-height: 60px;
+    background: #F0FAFF;
+    border: 3px dashed #88BBFF;
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    align-items: center;
+  }
+  .seq-hint { font-size: 13px; color: #AABBCC; font-style: italic; }
+  .seq-block { border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: bold; color: white; display: flex; align-items: center; gap: 4px; }
+  .seq-block .x { background: rgba(0,0,0,0.22); border: none; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; padding: 0; }
+
+  /* PONTUAÇÃO VISÍVEL */
+  .score-bar {
+    background: #FFF0E0;
+    border: 2px solid #FFCC88;
+    border-radius: 12px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .score-label { font-size: 13px; color: #AA6600; font-weight: bold; }
+  .score-phases { display: flex; gap: 6px; align-items: center; }
+  .score-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2.5px solid #DDBB88;
+    background: #FFEEDD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: #AA8855;
+    transition: all 0.3s;
+  }
+  .score-dot.done { background: #FFB700; border-color: #CC8800; color: white; font-size: 13px; }
+  .score-total { font-size: 18px; font-weight: bold; color: #FF8800; }
+
+  /* BOTÕES */
   .btns { display: flex; gap: 8px; justify-content: center; }
-  .run-btn { background: #44CC44; border: none; border-radius: 12px; padding: 9px 22px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s; }
-  .run-btn:hover { transform: scale(1.05); }
-  .clear-btn { background: #FF6666; border: none; border-radius: 12px; padding: 9px 16px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; }
+  .run-btn { background: #44CC44; border: none; border-radius: 14px; padding: 12px 28px; font-size: 18px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; transition: transform 0.1s; box-shadow: 0 4px 0 #229922; }
+  .run-btn:hover { transform: translateY(-2px); }
+  .run-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #229922; }
+  .clear-btn { background: #FF6666; border: none; border-radius: 14px; padding: 12px 18px; font-size: 18px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; box-shadow: 0 4px 0 #CC2222; }
+  .clear-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #CC2222; }
 
-  .overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; z-index: 99; }
-  .overlay.show { display: flex; }
-  .overlay-box { background: white; border-radius: 24px; padding: 28px 32px; text-align: center; max-width: 290px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  /* OVERLAY — faux viewport (não usa position:fixed) */
+  .overlay-wrapper {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.55);
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+  }
+  .overlay-wrapper.show { display: flex; }
+  .overlay-box { background: white; border-radius: 24px; padding: 28px 32px; text-align: center; max-width: 300px; }
   .overlay-box h3 { font-size: 24px; margin-bottom: 6px; }
-  .overlay-box .score-big { font-size: 52px; font-weight: bold; margin: 8px 0; }
-  .overlay-box .stars-big { font-size: 26px; margin-bottom: 10px; letter-spacing: 3px; }
-  .overlay-box p { font-size: 14px; margin-bottom: 14px; }
-  .overlay-btn { border: none; border-radius: 14px; padding: 10px 26px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; }
+  .score-big { font-size: 52px; font-weight: bold; margin: 8px 0; }
+  .stars-big { font-size: 28px; margin-bottom: 10px; letter-spacing: 3px; }
+  .overlay-box p { font-size: 15px; margin-bottom: 14px; }
+  .overlay-btn { border: none; border-radius: 14px; padding: 11px 28px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; font-family: inherit; }
 
-  .footer { text-align: center; font-size: 10px; color: #AA8877; padding-top: 4px; border-top: 1px solid #FFDDCC; margin-top: 2px; }
+  .footer { text-align: center; font-size: 10px; color: #AA8877; padding-top: 6px; border-top: 1px solid #FFDDCC; }
 </style>
 
-<div class="app">
-  <h2>🐱 PROGRAMANDO O GATINHO!</h2>
+<div class="app" id="main-app" style="position:relative;">
+  <div class="app-title">🐱 PROGRAMANDO O GATINHO!</div>
 
+  <!-- PALCO -->
   <div class="stage" id="stage">
     <div class="ground"></div>
     <div class="char" id="char">🐱</div>
@@ -55,8 +172,27 @@
     <div class="rep-counter" id="rep-counter"></div>
   </div>
 
-  <div class="mission-box" id="mission-box"></div>
+  <!-- MISSÃO -->
+  <div class="mission-box" id="mission-box">
+    <div class="mission-label" id="mission-label">📋 Missão</div>
+    <div class="mission-phase" id="mission-phase"></div>
+    <div class="mission-text" id="mission-text"></div>
+  </div>
 
+  <!-- PONTUAÇÃO -->
+  <div class="score-bar">
+    <div class="score-label">⭐ Pontuação:</div>
+    <div class="score-phases">
+      <div class="score-dot" id="dot-1">1</div>
+      <div class="score-dot" id="dot-2">2</div>
+      <div class="score-dot" id="dot-3">3</div>
+      <div class="score-dot" id="dot-4">4</div>
+    </div>
+    <div class="score-total" id="score-total">0/10</div>
+  </div>
+
+  <!-- BLOCOS DISPONÍVEIS -->
+  <div class="section-label">🧩 Blocos disponíveis — clique para adicionar:</div>
   <div class="blocks-area">
     <button class="block" style="background:#4499FF" id="bl-right"  onclick="add('➡️ Andar','#4499FF','right')">➡️ ANDAR</button>
     <button class="block" style="background:#2266CC" id="bl-left"   onclick="add('⬅️ Voltar','#2266CC','left')">⬅️ VOLTAR</button>
@@ -67,6 +203,7 @@
     <button class="block" style="background:#AA44FF" id="bl-repeat" onclick="addRepeat()">🔁 REPETIR</button>
   </div>
 
+  <!-- CONTROLE REPETIR -->
   <div class="repeat-ctrl" id="repeat-ctrl">
     <label>🔁 Repetir próximo bloco:</label>
     <select id="rep-times">
@@ -75,59 +212,71 @@
       <option value="4">4 vezes</option>
       <option value="5">5 vezes</option>
     </select>
-    <span style="font-size:11px;color:#AA66CC">← escolha um bloco</span>
+    <span style="font-size:12px;color:#AA66CC">← agora clique um bloco!</span>
   </div>
 
-  <div class="sequence" id="sequence">
-    <span class="seq-hint">👆 Monte sua sequência aqui!</span>
+  <!-- SEQUÊNCIA -->
+  <div class="sequence-wrapper">
+    <div class="sequence-header">
+      <div class="sequence-header-label">📝 Minha sequência de comandos:</div>
+      <div class="sequence-count" id="seq-count">0 blocos</div>
+    </div>
+    <div class="sequence" id="sequence">
+      <span class="seq-hint">👆 Os blocos que você clicar aparecem aqui!</span>
+    </div>
   </div>
 
+  <!-- BOTÕES -->
   <div class="btns">
     <button class="run-btn" id="run-btn" onclick="runAll()">▶ EXECUTAR!</button>
     <button class="clear-btn" onclick="clearAll()">🗑 LIMPAR</button>
   </div>
 
   <div class="footer">Material Pedagógico — Profª Adriana Bett Terebinto © 2026</div>
-</div>
 
-<div class="overlay" id="overlay">
-  <div class="overlay-box" id="overlay-box">
-    <h3 id="ov-title"></h3>
-    <div class="score-big" id="ov-score" style="display:none"></div>
-    <div class="stars-big" id="ov-stars" style="display:none"></div>
-    <p id="ov-text"></p>
-    <button class="overlay-btn" id="ov-btn"></button>
+  <!-- OVERLAY dentro do app (sem position:fixed) -->
+  <div class="overlay-wrapper" id="overlay">
+    <div class="overlay-box" id="overlay-box">
+      <h3 id="ov-title"></h3>
+      <div class="score-big" id="ov-score" style="display:none"></div>
+      <div class="stars-big" id="ov-stars" style="display:none"></div>
+      <p id="ov-text"></p>
+      <button class="overlay-btn" id="ov-btn"></button>
+    </div>
   </div>
 </div>
 
 <script>
 const PHASES = [
   {
-    num:1, label:'Fase 1', color:'#4499FF',
-    title:'FASE 1 — Movimentos',
+    num:1, label:'Fase 1 — Movimentos', color:'#4499FF',
     mission:'Use os blocos ➡️ Andar e ⬆️ Pular (nessa ordem!)',
-    check: s => s.some(x=>act(x)==='right') && s.some(x=>act(x)==='jump'),
+    check: s => {
+      const idxRight = s.findIndex(x=>act(x)==='right');
+      const idxJump  = s.findIndex(x=>act(x)==='jump');
+      return idxRight !== -1 && idxJump !== -1 && idxRight < idxJump;
+    },
     unlocked:['right','jump'], points:2.5
   },
   {
-    num:2, label:'Fase 2', color:'#FF8800',
-    title:'FASE 2 — Comunicação',
+    num:2, label:'Fase 2 — Comunicação', color:'#FF8800',
     mission:'Use: ➡️ Andar + ⬆️ Pular + 😸 Falar Oi! + ⬅️ Voltar',
     check: s => ['right','jump','say','left'].every(id=>s.some(x=>act(x)===id)),
     unlocked:['right','left','jump','say'], points:2.5
   },
   {
-    num:3, label:'Fase 3', color:'#FF66AA',
-    title:'FASE 3 — Expressão + 🔁 Repetição',
-    mission:'Use: ➡️ Andar + 🔄 Girar + 🎉 Dançar — e use o 🔁 Repetir ao menos uma vez!',
+    num:3, label:'Fase 3 — Expressão + Repetição', color:'#FF66AA',
+    mission:'Use ➡️ Andar + 🔄 Girar + 🎉 Dançar — e use o 🔁 Repetir ao menos uma vez!',
     check: s => ['right','spin','dance'].every(id=>s.some(x=>act(x)===id)) && s.some(x=>x.action==='repeat'),
     unlocked:['right','left','jump','spin','dance','say','repeat'], points:2.5
   },
   {
-    num:4, label:'Fase 4 ⭐', color:'#AA44FF',
-    title:'FASE 4 — Criação Livre!',
-    mission:'MONTE SUA SEQUENCIA',
-    check: s => { const ids=[...new Set(s.map(x=>x.action==='repeat'?'repeat':x.action))]; return ids.length>=4 && s.some(x=>x.action==='repeat'); },
+    num:4, label:'Fase 4 ⭐ — Criação Livre!', color:'#AA44FF',
+    mission:'Monte sua própria sequência usando pelo menos 4 blocos diferentes e o 🔁 Repetir!',
+    check: s => {
+      const ids=[...new Set(s.map(x=>x.action==='repeat'?'repeat':x.action))];
+      return ids.length>=4 && s.some(x=>x.action==='repeat');
+    },
     unlocked:['right','left','jump','spin','dance','say','repeat'], points:2.5
   },
 ];
@@ -143,10 +292,13 @@ const repCtrl=document.getElementById('repeat-ctrl');
 function loadPhase(){
   phaseDone=false; pendingRepeat=null; repCtrl.style.display='none';
   const p=PHASES[phase];
-  const mb=document.getElementById('mission-box');
-  mb.style.background=p.color+'22'; mb.style.borderColor=p.color; mb.style.color='#333';
-  mb.innerHTML=`<strong style="color:${p.color}">${p.title}</strong><br>${p.mission}`;
+  document.getElementById('mission-box').style.background=p.color+'18';
+  document.getElementById('mission-box').style.borderColor=p.color;
+  document.getElementById('mission-phase').textContent=p.label;
+  document.getElementById('mission-phase').style.color=p.color;
+  document.getElementById('mission-text').textContent=p.mission;
   updateBlockAccess();
+  updateScoreBar();
 }
 
 function updateBlockAccess(){
@@ -155,6 +307,20 @@ function updateBlockAccess(){
     const el=document.getElementById('bl-'+id);
     if(el) el.disabled=!u.includes(id);
   });
+}
+
+function updateScoreBar(){
+  document.getElementById('score-total').textContent=totalScore.toFixed(1)+'/10';
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('dot-'+i);
+    if(i-1<phase||( i-1===phase&&phaseDone)){
+      dot.classList.add('done'); dot.textContent='✓';
+    } else if(i-1===phase){
+      dot.classList.remove('done'); dot.textContent=i; dot.style.borderColor=PHASES[phase].color; dot.style.color=PHASES[phase].color;
+    } else {
+      dot.classList.remove('done'); dot.textContent=i; dot.style.borderColor='#DDBB88'; dot.style.color='#AA8855';
+    }
+  }
 }
 
 function addRepeat(){
@@ -177,7 +343,9 @@ function add(label,color,action){
 
 function render(){
   seqEl.innerHTML='';
-  if(!seq.length){ seqEl.innerHTML='<span class="seq-hint">👆 Monte sua sequência aqui!</span>'; return; }
+  const count=seq.length;
+  document.getElementById('seq-count').textContent=count+(count===1?' bloco':' blocos');
+  if(!count){ seqEl.innerHTML='<span class="seq-hint">👆 Os blocos que você clicar aparecem aqui!</span>'; return; }
   seq.forEach((b,i)=>{
     const el=document.createElement('div');
     el.className='seq-block';
@@ -192,7 +360,7 @@ function rem(i){ if(running) return; seq.splice(i,1); render(); }
 function clearAll(){
   if(running) return;
   seq=[]; pendingRepeat=null; repCtrl.style.display='none'; render();
-  posX=20; char.style.left=posX+'px'; char.style.bottom='50px';
+  posX=20; char.style.left=posX+'px'; char.style.bottom='55px';
   char.style.transform=''; bubble.style.display='none';
   document.getElementById('rep-counter').style.display='none';
 }
@@ -203,10 +371,10 @@ async function execAction(action){
   const stageW=document.getElementById('stage').clientWidth;
   if(action==='right'){ posX=Math.min(posX+70,stageW-70); char.style.left=posX+'px'; await delay(380); }
   else if(action==='left'){ posX=Math.max(posX-70,10); char.style.left=posX+'px'; await delay(380); }
-  else if(action==='jump'){ char.style.bottom='115px'; await delay(320); char.style.bottom='50px'; await delay(320); }
+  else if(action==='jump'){ char.style.bottom='130px'; await delay(320); char.style.bottom='55px'; await delay(320); }
   else if(action==='spin'){ char.style.transition='transform 0.45s'; char.style.transform='rotate(360deg)'; await delay(500); char.style.transition=''; char.style.transform=''; }
-  else if(action==='dance'){ for(let i=0;i<3;i++){ char.style.bottom='78px'; await delay(170); char.style.bottom='50px'; await delay(170); } }
-  else if(action==='say'){ bubble.textContent='Oi! 😸'; bubble.style.display='block'; bubble.style.left=(posX-10)+'px'; bubble.style.bottom='108px'; await delay(1100); bubble.style.display='none'; }
+  else if(action==='dance'){ for(let i=0;i<3;i++){ char.style.bottom='85px'; await delay(170); char.style.bottom='55px'; await delay(170); } }
+  else if(action==='say'){ bubble.textContent='Oi! 😸'; bubble.style.display='block'; bubble.style.left=(posX-10)+'px'; bubble.style.bottom='120px'; await delay(1100); bubble.style.display='none'; }
 }
 
 async function runAll(){
@@ -224,7 +392,7 @@ async function runAll(){
     await delay(90);
   }
   running=false;
-  document.getElementById('run-btn').textContent='▶ Executar!';
+  document.getElementById('run-btn').textContent='▶ EXECUTAR!';
   evaluate();
 }
 
@@ -232,16 +400,16 @@ function evaluate(){
   const p=PHASES[phase];
   const passed=p.check(seq);
   if(passed&&!phaseDone){
-    totalScore=Math.min(10,totalScore+p.points);
+    totalScore=parseFloat(Math.min(10,totalScore+p.points).toFixed(1));
     phaseDone=true;
+    updateScoreBar();
     setTimeout(()=>showOverlay(true),500);
   } else if(!passed){
     showOverlay(false);
   }
 }
 
-const COLORS_OK  = ['#FF6600','#44BB44','#AA44FF','#FF3399'];
-const COLORS_TRY = '#FF8800';
+const COLORS_OK=['#4499FF','#FF8800','#FF66AA','#AA44FF'];
 
 function showOverlay(passed){
   const p=PHASES[phase];
@@ -252,39 +420,37 @@ function showOverlay(passed){
 
   if(passed){
     box.style.border=`5px solid ${COLORS_OK[phase]}`;
-    box.style.background=`linear-gradient(135deg, #fffbe6 0%, #fff0fa 100%)`;
+    box.style.background='#fffdf5';
     document.getElementById('ov-title').textContent = isLast ? '🏆 Você arrasou!' : '🎉 Fase '+p.num+' concluída!';
-
     if(isLast){
       const s=totalScore;
-      const full=Math.floor(s/2), half=s%2>=0.5?1:0;
+      const full=Math.floor(s/2);
+      const half=(s%2)>=1?1:0;
+      const empty=5-full-half;
       scoreEl.textContent=s.toFixed(1)+'/10';
       scoreEl.style.color=COLORS_OK[phase];
       scoreEl.style.display='block';
-      starsEl.textContent='⭐'.repeat(full)+(half?'✨':'')+'☆'.repeat(5-full-half);
+      starsEl.textContent='⭐'.repeat(full)+(half?'✨':'')+'☆'.repeat(Math.max(0,empty));
       starsEl.style.display='block';
-      document.getElementById('ov-text').textContent='PARABÉNS!🌟';
+      document.getElementById('ov-text').textContent='PARABÉNS! Atividade concluída! 🌟';
       const btn=document.getElementById('ov-btn');
-      btn.textContent='🎊 Finalizar!';
-      btn.style.background=COLORS_OK[phase];
+      btn.textContent='🎊 Finalizar!'; btn.style.background=COLORS_OK[phase];
       btn.onclick=()=>document.getElementById('overlay').classList.remove('show');
     } else {
       scoreEl.style.display='none'; starsEl.style.display='none';
-      document.getElementById('ov-text').textContent='ÓTIMO TRABALHO! 💪';
+      document.getElementById('ov-text').textContent='ÓTIMO TRABALHO! 💪 Continue assim!';
       const btn=document.getElementById('ov-btn');
-      btn.textContent='➡️ PRÓXIMA FASE!';
-      btn.style.background=COLORS_OK[phase];
+      btn.textContent='➡️ PRÓXIMA FASE!'; btn.style.background=COLORS_OK[phase];
       btn.onclick=nextPhase;
     }
   } else {
-    box.style.border=`5px solid ${COLORS_TRY}`;
-    box.style.background='linear-gradient(135deg, #fff8e0 0%, #fff3cc 100%)';
+    box.style.border='5px solid #FF8800';
+    box.style.background='#fffbf0';
     scoreEl.style.display='none'; starsEl.style.display='none';
     document.getElementById('ov-title').textContent='🤔 QUASE LÁ!';
-    document.getElementById('ov-text').textContent='RELEIA A MISSÃO!';
+    document.getElementById('ov-text').textContent='Releia a missão e tente de novo!';
     const btn=document.getElementById('ov-btn');
-    btn.textContent='🔄 TENTAR DE NOVO!';
-    btn.style.background=COLORS_TRY;
+    btn.textContent='🔄 TENTAR DE NOVO!'; btn.style.background='#FF8800';
     btn.onclick=()=>{ document.getElementById('overlay').classList.remove('show'); clearAll(); };
   }
   document.getElementById('overlay').classList.add('show');
